@@ -23,8 +23,6 @@ def home():
                 "index.html",
                 error="Could not get weather data. Please try again."
             )
-
-        # Get 5-day forecast
         forecast = data["weather"][:5]
 
         # Current weather
