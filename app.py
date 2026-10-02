@@ -9,89 +9,47 @@ app = Flask(__name__)
 def home():
     if request.method == "POST":
         city = request.form.get("city")
+        updated_time = datetime.now().strftime("%H:%M:%S")
 
-        if not city:
-            return render_template("index.html", error="Please enter a city.")
+        url = f"https://wttr.in/{city}?format=j1"
 
-        try:
-            url = f"https://wttr.in/{city}?format=j1"
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            data = response.json()
-        except requests.RequestException:
-            return render_template(
-                "index.html",
-                error="Could not get weather data. Please try again."
-            )
-        forecast = data["weather"][:5]
+        response = requests.get(url)
+        data = response.json()
 
-        # Current weather
-        current_weather = data["current_condition"][0]
-
-        temperature = current_weather["temp_C"]
-        feels_like = current_weather["FeelsLikeC"]
-        wind_speed = current_weather["windspeedKmph"]
-        humidity = current_weather["humidity"]
-        condition = current_weather["weatherDesc"][0]["value"]
-
-        # Sunrise and sunset
+        temperature = data["current_condition"][0]["temp_C"]
+        feels_like = data["current_condition"][0]["FeelsLikeC"]
+        wind_speed = data["current_condition"][0]["windspeedKmph"]
+        humidity = data["current_condition"][0]["humidity"]
         sunrise = data["weather"][0]["astronomy"][0]["sunrise"]
         sunset = data["weather"][0]["astronomy"][0]["sunset"]
-
-        sunrise_time = datetime.strptime(
-            sunrise, "%I:%M %p"
-        ).strftime("%H:%M")
-
-        sunset_time = datetime.strptime(
-            sunset, "%I:%M %p"
-        ).strftime("%H:%M")
-
-        current_time = datetime.now().strftime("%H:%M")
-
-        # Determine day/night
-        if sunrise_time <= current_time <= sunset_time:
-            day_night = "☀️ Daytime"
-        else:
-            day_night = "🌙 Nighttime"
+        condition = data["current_condition"][0]["weatherDesc"][0]["value"]
 
         # Choose emoji
-        condition_lower = condition.lower()
-
-        if "sunny" in condition_lower:
+        if "Sunny" in condition:
             emoji = "☀️"
-        elif "clear" in condition_lower:
-            emoji = "🌙"
-        elif "cloudy" in condition_lower:
+        elif "Cloudy" in condition:
             emoji = "☁️"
-        elif "overcast" in condition_lower:
-            emoji = "☁️"
-        elif "rain" in condition_lower:
+        elif "Rain" in condition:
             emoji = "🌧️"
-        elif "drizzle" in condition_lower:
-            emoji = "🌦️"
-        elif "thunder" in condition_lower:
-            emoji = "⛈️"
-        elif "snow" in condition_lower:
-            emoji = "❄️"
-        elif "fog" in condition_lower or "mist" in condition_lower:
+        elif "Fog" in condition:
             emoji = "🌫️"
+        elif "Overcast" in condition:
+            emoji = "☁️"
         else:
             emoji = "🌤️"
 
         # Choose advice based on temperature
-        temperature_int = int(temperature)
-
-        if temperature_int >= 30:
+        if int(temperature) >= 30:
             advice = "It's hot! Stay hydrated. 🥤"
-        elif temperature_int >= 20:
+        elif int(temperature) >= 20:
             advice = "The weather looks comfortable. 😎"
         else:
             advice = "It's cool outside. You might want a coat. 🧥"
 
         # Add weather-specific advice
-        if "rain" in condition_lower:
+        if "Rain" in condition:
             advice += " Don't forget your umbrella! ☔"
-        elif "fog" in condition_lower or "mist" in condition_lower:
+        elif "Fog" in condition:
             advice += " Visibility may be low. Be careful outside. 🌫️"
 
         return render_template(
@@ -104,13 +62,11 @@ def home():
             humidity=humidity,
             sunrise=sunrise,
             sunset=sunset,
-            day_night=day_night,
+            updated_time=updated_time,
             advice=advice,
-            emoji=emoji,
-            forecast=forecast
+            emoji=emoji
         )
 
-    # GET request
     return render_template("index.html")
 
 
