@@ -56,7 +56,7 @@ def home():
                 "forecast": []
             })
 
-            for day in days[:5]:
+            for day in days[:7]:
                 details = day.get("hourly", [{}])[0]
                 description = details.get(
                     "weatherDesc", [{"value": "Unknown"}])[0]["value"]
