@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Weather Forecast</title>
+
     <style>
         body {
             font-family: Arial;
@@ -86,13 +87,24 @@
 
     {% if forecast is defined and forecast %}
     <h2>📅 Forecast</h2>
+
     {% for day in forecast %}
     <div class="forecast">
         <b>{{ day.get('date', 'Day') }}</b>
-        <p class="icon">{{ day.get('emoji', '🌤️') }}</p>
-        <p>{{ day.get('condition', 'N/A') }}</p>
-        <p>⬆ {{ day.get('max_temp', 'N/A') }}°C</p>
-        <p>⬇ {{ day.get('min_temp', 'N/A') }}°C</p>
+
+        <hr>
+
+        <h3>☀️ Day</h3>
+        <p class="icon">{{ day.get('day_emoji', day.get('emoji', '🌤️')) }}</p>
+        <p>{{ day.get('day_condition', day.get('condition', 'N/A')) }}</p>
+        <p>⬆ High: {{ day.get('max_temp', 'N/A') }}°C</p>
+
+        <hr>
+
+        <h3>🌙 Night</h3>
+        <p class="icon">{{ day.get('night_emoji', '🌙') }}</p>
+        <p>{{ day.get('night_condition', 'N/A') }}</p>
+        <p>⬇ Low: {{ day.get('min_temp', 'N/A') }}°C</p>
     </div>
     {% endfor %}
     {% endif %}
