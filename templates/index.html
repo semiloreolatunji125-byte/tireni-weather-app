@@ -3,75 +3,84 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Weather Forecast</title>
     <style>
         body {
             font-family: Arial;
-            background: #eef5ff;
             text-align: center;
+            background: #071a35;
+            color: white;
             padding: 20px;
         }
 
         .card {
-            background: white;
+            background: #102b50;
             padding: 20px;
-            margin: 15px auto;
-            border-radius: 10px;
-            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 15px;
+            max-width: 600px;
         }
 
         input,
         button {
-            padding: 10px;
-            margin: 5px;
+            padding: 12px;
+            border: 0;
+            border-radius: 8px;
         }
 
         button {
-            background: #2563eb;
-            color: white;
-            border: 0;
+            background: #00c8ff;
             cursor: pointer;
+            font-weight: bold;
+        }
+
+        h1,
+        h2 {
+            color: #00c8ff;
+        }
+
+        .icon {
+            font-size: 55px;
         }
 
         .forecast {
             display: inline-block;
-            background: white;
+            background: #163b68;
             padding: 12px;
             margin: 5px;
-            border-radius: 8px;
+            border-radius: 10px;
+        }
+
+        p {
+            color: #dbeafe;
         }
     </style>
 </head>
 
 <body>
     <h1>🌦️ Weather Forecast</h1>
+    <p>Check the weather. Plan your day. 🚀</p>
 
-    <form method="POST" action="/">
-        <input type="text" name="city" placeholder="Enter city name" value="{{ city or '' }}" required>
+    <form method="POST">
+        <input name="city" placeholder="Enter city..." value="{{ city or '' }}" required>
         <button type="submit">Search</button>
     </form>
 
-    {% if error %}
-    <p>{{ error }}</p>
-    {% endif %}
+    {% if error %}<p>{{ error }}</p>{% endif %}
 
     {% if temperature is defined and temperature is not none %}
     <div class="card">
-        <h2>{{ city }}</h2>
-        <h1>{{ emoji or '🌤️' }}</h1>
-        <h2>{{ temperature }}°C</h2>
-        <p>{{ condition or 'Weather unavailable' }}</p>
-
-        <p>Feels like: {{ feels_like if feels_like is defined else 'N/A' }}°C</p>
-        <p>Humidity: {{ humidity if humidity is defined else 'N/A' }}%</p>
-        <p>Wind: {{ wind_speed if wind_speed is defined else 'N/A' }} km/h</p>
-        <p>Sunrise: {{ sunrise if sunrise is defined else 'N/A' }}</p>
-        <p>Sunset: {{ sunset if sunset is defined else 'N/A' }}</p>
-
-        {% if advice %}
-        <p>💡 {{ advice }}</p>
-        {% endif %}
+        <h2>📍 {{ city }}</h2>
+        <div class="icon">{{ emoji or '🌤️' }}</div>
+        <h1>{{ temperature }}°C</h1>
+        <p>{{ condition }}</p>
+        <p>Feels like: {{ feels_like|default('N/A') }}°C</p>
+        <p>💧 Humidity: {{ humidity|default('N/A') }}%</p>
+        <p>💨 Wind: {{ wind_speed|default('N/A') }} km/h</p>
+        <p>🌅 Sunrise: {{ sunrise|default('N/A') }}</p>
+        <p>🌇 Sunset: {{ sunset|default('N/A') }}</p>
+        {% if advice|default('') %}<p>💡 {{ advice }}</p>{% endif %}
     </div>
     {% endif %}
 
@@ -79,14 +88,18 @@
     <h2>📅 Forecast</h2>
     {% for day in forecast %}
     <div class="forecast">
-        <h3>{{ day.get('date', 'Day') }}</h3>
-        <p>{{ day.get('emoji', '🌤️') }}</p>
+        <b>{{ day.get('date', 'Day') }}</b>
+        <p class="icon">{{ day.get('emoji', '🌤️') }}</p>
         <p>{{ day.get('condition', 'N/A') }}</p>
-        <p>High: {{ day.get('max_temp', 'N/A') }}°C</p>
-        <p>Low: {{ day.get('min_temp', 'N/A') }}°C</p>
+        <p>⬆ {{ day.get('max_temp', 'N/A') }}°C</p>
+        <p>⬇ {{ day.get('min_temp', 'N/A') }}°C</p>
     </div>
     {% endfor %}
     {% endif %}
+
+    <footer>
+        <p>⚡ Stay cool. Stay ready.</p>
+    </footer>
 </body>
 
 </html>
