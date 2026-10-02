@@ -1,87 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Tireni Weather App 🌦️|
-        Weather Forcast</title>
-    <meta name="description" content="Check current Weather and 5-days forcasts fron cities around the world.">
-    <p>
-        Check the current weather and 5-day forcast for cities around the world.
-    </p>
-    <!-- Google Analytics-->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMCNJJP7Y9"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'G-XMCNJJP7Y9');
-    </script>
-
-<body>
-
-    <h1>Weather App 🌦️</h1>
-    {%if error %}
-    <p style="color:red;">{{ error}}</p>
-    {%endif%}
+    <meta charset="UTF-8">
+    <title>Weather App</title>
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+            margin: 0;
+            padding: 40px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        h1 {
             text-align: center;
-            background-color: rgb(129, 214, 243);
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
         }
 
         input {
-            padding: 10px;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            width: 260px;
+            font-size: 16px;
         }
 
         button {
-            padding: 10px;
-            background-color: blue;
-            color: white;
+            padding: 12px 18px;
             border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
         }
 
-        h2 {
-            color: darkblue;
+        .error {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .weather-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .temp {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .forecast {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .day {
+            background: #eff6ff;
+            border-radius: 10px;
+            padding: 12px;
+            min-width: 120px;
+            text-align: center;
         }
     </style>
-    </head>
+</head>
 
+<body>
+    <div class="container">
+        <h1>Weather Forecast</h1>
 
-    <form method="POST">
-        <input type="text" name="city" placeholder="Enter a city" required>
-        <button type="submit">Search</button>
-    </form>
+        <form method="POST">
+            <input type="text" name="city" placeholder="Enter city" value="{{ city or '' }}" required>
+            <button type="submit">Check Weather</button>
+        </form>
 
-    {% if city %}
-    <h2>5-Day Forecast 🌦️</h2>
-    {%for day in forecast%}
-    <h3>{{ day["date"] }}</h3>
-    <p>Max: {{ day["maxtempC"] }}°C</p>
-    <p>Min: {{ day["mintempC"] }}°C</p>
-    <p>{{ day["hourly"][4]["weatherDesc"][0]["value"] }}</p>
-    <p>Rain chance: {{ day["hourly"][4]["chanceofrain"] }}%</p>
-    <p>Wind: {{ day["hourly"][4]["windspeedKmph"] }} km/h</p>
-    <p>🌦️ {{ day.hourly[4].weatherDesc[0].value }}</p>
-    {% endfor %}
-    <h2>{{ city }}</h2>
-    <p>{{ day_night }}</p>
-    <p>Temperature:
-        {{ temperature }} °C</p>
-    <p>Feels Like: {{ feels_like }} °C</p>
-    <p>condition:
-        {{condition }}</p>
-    <p>{{ emoji }}</p>
-    <p>Wind Speed :{{ wind_speed }} km/h</p>
-    <p>Humidity: {{ humidity }}%</p>
-    <p>sunrise: {{ sunrise }}</p>
-    <p>Sunset:{{ sunset}}</p>
-    <p>{{ advice }}</p>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
 
-    {% endif %}
+        {% if temperature %}
+        <div class="weather-card">
+            <div class="top">
+                <div>
+                    <h2>{{ city }}</h2>
+                    <p>{{ day_night }}</p>
+                </div>
+                <div class="temp">{{ emoji }} {{ temperature }}°C</div>
+            </div>
+
+            <p><strong>Condition:</strong> {{ condition }}</p>
+            <p><strong>Feels like:</strong> {{ feels_like }}°C</p>
+            <p><strong>Advice:</strong> {{ advice }}</p>
+
+            <div class="grid">
+                <div class="stat"><strong>Wind</strong><br>{{ wind_speed }} km/h</div>
+                <div class="stat"><strong>Humidity</strong><br>{{ humidity }}%</div>
+                <div class="stat"><strong>Sunrise</strong><br>{{ sunrise }}</div>
+                <div class="stat"><strong>Sunset</strong><br>{{ sunset }}</div>
+            </div>
+
+            <h3>Next 5 days</h3>
+            <div class="forecast">
+                {% for day in forecast %}
+                <div class="day">
+                    <strong>{{ day['date'] }}</strong><br>
+                    {{ day['maxtempC'] }}°C / {{ day['mintempC'] }}°C<br>
+                    {{ day['hourly'][0]['weatherDesc'][0]['value'] }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </body>
 
 </html>
