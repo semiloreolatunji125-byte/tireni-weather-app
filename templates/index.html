@@ -3,163 +3,90 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Weather App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
-            margin: 0;
-            padding: 40px;
-            color: #1f2937;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-        }
-
-        h1 {
+            font-family: Arial;
+            background: #eef5ff;
             text-align: center;
-            margin-bottom: 20px;
+            padding: 20px;
         }
 
-        form {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
-
-        input {
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 15px auto;
             border-radius: 10px;
-            width: 260px;
-            font-size: 16px;
+            max-width: 500px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px;
         }
 
         button {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 10px;
             background: #2563eb;
-            color: #fff;
-            font-size: 16px;
+            color: white;
+            border: 0;
             cursor: pointer;
         }
 
-        .error {
-            color: #b91c1c;
-            background: #fee2e2;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .weather-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .temp {
-            font-size: 42px;
-            font-weight: bold;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat {
-            background: white;
-            border-radius: 10px;
-            padding: 14px;
-            border: 1px solid #e2e8f0;
-        }
-
         .forecast {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .day {
-            background: #eff6ff;
-            border-radius: 10px;
+            display: inline-block;
+            background: white;
             padding: 12px;
-            min-width: 120px;
-            text-align: center;
+            margin: 5px;
+            border-radius: 8px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Weather Forecast</h1>
+    <h1>🌦️ Weather Forecast</h1>
 
-        <form method="POST">
-            <input type="text" name="city" placeholder="Enter city" value="{{ city or '' }}" required>
-            <button type="submit">Check Weather</button>
-        </form>
+    <form method="POST" action="/">
+        <input type="text" name="city" placeholder="Enter city name" value="{{ city or '' }}" required>
+        <button type="submit">Search</button>
+    </form>
 
-        {% if error %}
-        <div class="error">{{ error }}</div>
-        {% endif %}
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
 
-        {% if temperature %}
-        <div class="weather-card">
-            <div class="top">
-                <div>
-                    <h2>{{ city }}</h2>
-                    <p>{{ day_night }}</p>
-                </div>
-                <div class="temp">{{ emoji }} {{ temperature }}°C</div>
-            </div>
+    {% if temperature is defined and temperature is not none %}
+    <div class="card">
+        <h2>{{ city }}</h2>
+        <h1>{{ emoji or '🌤️' }}</h1>
+        <h2>{{ temperature }}°C</h2>
+        <p>{{ condition or 'Weather unavailable' }}</p>
 
-            <p><strong>Condition:</strong> {{ condition }}</p>
-            <p><strong>Feels like:</strong> {{ feels_like }}°C</p>
-            <p><strong>Advice:</strong> {{ advice }}</p>
+        <p>Feels like: {{ feels_like if feels_like is defined else 'N/A' }}°C</p>
+        <p>Humidity: {{ humidity if humidity is defined else 'N/A' }}%</p>
+        <p>Wind: {{ wind_speed if wind_speed is defined else 'N/A' }} km/h</p>
+        <p>Sunrise: {{ sunrise if sunrise is defined else 'N/A' }}</p>
+        <p>Sunset: {{ sunset if sunset is defined else 'N/A' }}</p>
 
-            <div class="grid">
-                <div class="stat"><strong>Wind</strong><br>{{ wind_speed }} km/h</div>
-                <div class="stat"><strong>Humidity</strong><br>{{ humidity }}%</div>
-                <div class="stat"><strong>Sunrise</strong><br>{{ sunrise }}</div>
-                <div class="stat"><strong>Sunset</strong><br>{{ sunset }}</div>
-            </div>
-
-            <h3>Next 5 days</h3>
-            <div class="forecast">
-                {% for day in forecast %}
-                <div class="day">
-                    <strong>{{ day['date'] }}</strong><br>
-                    {{ day['maxtempC'] }}°C / {{ day['mintempC'] }}°C<br>
-                    {{ day['hourly'][0]['weatherDesc'][0]['value'] }}
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+        {% if advice %}
+        <p>💡 {{ advice }}</p>
         {% endif %}
     </div>
+    {% endif %}
+
+    {% if forecast is defined and forecast %}
+    <h2>📅 Forecast</h2>
+    {% for day in forecast %}
+    <div class="forecast">
+        <h3>{{ day.get('date', 'Day') }}</h3>
+        <p>{{ day.get('emoji', '🌤️') }}</p>
+        <p>{{ day.get('condition', 'N/A') }}</p>
+        <p>High: {{ day.get('max_temp', 'N/A') }}°C</p>
+        <p>Low: {{ day.get('min_temp', 'N/A') }}°C</p>
+    </div>
+    {% endfor %}
+    {% endif %}
 </body>
 
 </html>
