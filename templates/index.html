@@ -87,6 +87,7 @@
 
     {% if forecast is defined and forecast %}
     <h2>📅 5- Day Forecast</h2>
+    <p>Forecast cards: {{ forecast[:5]|length }}</p>
 
     {% for day in forecast[:5] %}
     <div class="forecast">
