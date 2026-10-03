@@ -76,7 +76,7 @@ def home():
                 "forecast": []
             })
 
-            for day in days[:7]:
+            for day in days[:6]:
                 hourly = day.get("hourly", [])
 
                 # Find daytime and nighttime entries
