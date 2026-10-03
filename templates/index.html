@@ -8,11 +8,13 @@
 
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             text-align: center;
-            background: #071a35;
+            background: linear-gradient(#0b3d78, #071a35);
             color: white;
             padding: 20px;
+            min-height: 100vh;
+            margin: 0;
         }
 
         .card {
@@ -21,6 +23,7 @@
             margin: 20px auto;
             border-radius: 15px;
             max-width: 600px;
+            border: 2px solid #00c8ff;
         }
 
         input,
@@ -43,18 +46,56 @@
 
         .icon {
             font-size: 55px;
+            margin: 5px 0;
+        }
+
+        .forecast-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            max-width: 1100px;
+            margin: 0 auto;
         }
 
         .forecast {
-            display: inline-block;
             background: #163b68;
-            padding: 12px;
-            margin: 5px;
-            border-radius: 10px;
+            border-radius: 12px;
+            width: 200px;
+            overflow: hidden;
+        }
+
+        .forecast .date {
+            display: block;
+            padding: 10px;
+            background: #1d4d86;
+            font-weight: bold;
+        }
+
+        .period {
+            padding: 10px;
+        }
+
+        .period.day {
+            background: #1a4a80;
+        }
+
+        .period.night {
+            background: #0d2145;
+        }
+
+        .period h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .period .icon {
+            font-size: 40px;
         }
 
         p {
             color: #dbeafe;
+            margin: 4px 0;
         }
     </style>
 </head>
@@ -72,7 +113,7 @@
 
     {% if temperature is defined and temperature is not none %}
     <div class="card">
-        <h2>📍 {{ city }}<small>(Now)</small></h2>
+        <h2>📍 {{ city }} <small>(Now)</small></h2>
         <div class="icon">{{ emoji or '🌤️' }}</div>
         <h1>{{ temperature }}°C</h1>
         <p>{{ condition }}</p>
@@ -86,28 +127,29 @@
     {% endif %}
 
     {% if forecast is defined and forecast %}
-    <h2>📅 5-Day Forecast</h2>
-    <p>Forecast cards: {{ forecast[:5]|length }}</p>
+    <h2>📅 {{ forecast|length }}-Day Forecast</h2>
 
-    {% for day in forecast[:5] %}
-    <div class="forecast">
-        <b>{{ day.get('date', 'Day') }}</b>
+    <div class="forecast-wrap">
+        {% for day in forecast %}
+        <div class="forecast">
+            <span class="date">{{ day.get('date', 'Day') }}</span>
 
-        <hr>
+            <div class="period day">
+                <h3>☀️ Day</h3>
+                <p class="icon">{{ day.get('day_emoji', '🌤️') }}</p>
+                <p>{{ day.get('day_condition', 'N/A') }}</p>
+                <p>⬆ High: {{ day.get('max_temp', 'N/A') }}°C</p>
+            </div>
 
-        <h3>☀️ Day</h3>
-        <p class="icon">{{ day.get('day_emoji', day.get('emoji', '🌤️')) }}</p>
-        <p>{{ day.get('day_condition', day.get('condition', 'N/A')) }}</p>
-        <p>⬆ High: {{ day.get('max_temp', 'N/A') }}°C</p>
-
-        <hr>
-
-        <h3>🌙 Night</h3>
-        <p class="icon">{{ day.get('night_emoji', '🌙') }}</p>
-        <p>{{ day.get('night_condition', 'N/A') }}</p>
-        <p>⬇ Low: {{ day.get('min_temp', 'N/A') }}°C</p>
+            <div class="period night">
+                <h3>🌙 Night</h3>
+                <p class="icon">{{ day.get('night_emoji', '🌙') }}</p>
+                <p>{{ day.get('night_condition', 'N/A') }}</p>
+                <p>⬇ Low: {{ day.get('min_temp', 'N/A') }}°C</p>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
     {% endif %}
 
     <footer>
