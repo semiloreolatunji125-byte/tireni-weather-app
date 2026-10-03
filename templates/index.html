@@ -86,9 +86,9 @@
     {% endif %}
 
     {% if forecast is defined and forecast %}
-    <h2>📅 Forecast</h2>
+    <h2>📅 5- Day Forecast</h2>
 
-    {% for day in forecast %}
+    {% for day in forecast[:5] %}
     <div class="forecast">
         <b>{{ day.get('date', 'Day') }}</b>
 
