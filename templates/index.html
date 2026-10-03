@@ -72,7 +72,7 @@
 
     {% if temperature is defined and temperature is not none %}
     <div class="card">
-        <h2>📍 {{ city }}</h2>
+        <h2>📍 {{ city }}<small>(Now)</small></h2>
         <div class="icon">{{ emoji or '🌤️' }}</div>
         <h1>{{ temperature }}°C</h1>
         <p>{{ condition }}</p>
@@ -86,7 +86,7 @@
     {% endif %}
 
     {% if forecast is defined and forecast %}
-    <h2>📅 5- Day Forecast</h2>
+    <h2>📅 5-Day Forecast</h2>
     <p>Forecast cards: {{ forecast[:5]|length }}</p>
 
     {% for day in forecast[:5] %}
